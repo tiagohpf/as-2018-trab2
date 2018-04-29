@@ -14,13 +14,17 @@ import java.net.Socket;
  */
 public class GUI extends javax.swing.JFrame {
 
+    //Sockets for load balancing + monitoring
+    private ServerSocket serverSocket = null;
+    private Socket clientSocket = null;
+
     /**
      * Creates new form Server
      */
     public GUI() {
         initComponents();
     }
-
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -135,10 +139,9 @@ public class GUI extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
 
-        //Monitor connection
+        //Recieve id's from the servers and print output with MonitorThread
         Thread t = new Thread() {
             public void run() {
-                ServerSocket serverSocket = null;
                 try {
                     serverSocket = new ServerSocket(Integer.parseInt(jTextField4.getText()));
                     jTextArea1.append("Monitor is listening on port: " + Integer.parseInt(jTextField4.getText()) + "\n");
@@ -148,7 +151,7 @@ public class GUI extends javax.swing.JFrame {
                 while (true) {
                     jTextArea1.append("Monitor is waiting for a new connection\n");
                     // wait for a new connection/client
-                    Socket clientSocket = null;
+
                     try {
                         clientSocket = serverSocket.accept();
                     } catch (Exception e) {

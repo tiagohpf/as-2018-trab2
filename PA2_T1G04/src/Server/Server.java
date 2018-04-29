@@ -22,6 +22,7 @@ import java.util.logging.Logger;
  */
 public class Server extends javax.swing.JFrame {
 
+    //Vars with ID, outputs and sockets for both acessing monitor and recieving clients
     private static UUID id;
     private DataOutputStream out = null;
     private Socket socket = null;
@@ -164,13 +165,16 @@ public class Server extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-
+        
+        //HEARTHBEAT function
+        
+        
         //Connect to monitor
         //Timer to notify the monitor
         TimerTask t = new TimerTask() {
             public void run() {
                 try {
+                    //Write to socket and close after HB is done
                     socket = new Socket(jTextField2.getText(), Integer.parseInt(jTextField3.getText()));
                     out = new DataOutputStream(socket.getOutputStream());
                     out.writeBytes(String.valueOf(id) + "\n");
@@ -196,7 +200,7 @@ public class Server extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField4ActionPerformed
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
+        
 
         //Server stuff must run on thread to prevent GUI freezing
         Thread t = new Thread() {

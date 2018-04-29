@@ -20,6 +20,7 @@ import javax.swing.JTextArea;
  */
 class MonitorThread extends Thread {
 
+    //Print output from servers connection to monitor
     public MonitorThread(Socket clientSocket, JTextArea jTextArea1) {
         Scanner read = null;
         try {
