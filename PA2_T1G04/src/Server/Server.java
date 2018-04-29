@@ -23,6 +23,9 @@ import java.util.logging.Logger;
 public class Server extends javax.swing.JFrame {
 
     private static UUID id;
+    private DataOutputStream out = null;
+    private Socket socket = null;
+    private Socket clientSocket = null;
 
     /**
      * Creates new form Server
@@ -112,9 +115,7 @@ public class Server extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(89, 89, 89)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(jLabel1))
+                                    .addComponent(jLabel1)
                                     .addComponent(jLabel2))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -139,12 +140,13 @@ public class Server extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(17, 17, 17)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel4)))
+                        .addComponent(jLabel4))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -163,31 +165,26 @@ public class Server extends javax.swing.JFrame {
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
-        Socket socket = null;
-        DataOutputStream temp = null;
+
         //Connect to monitor
-        try {
-            socket = new Socket(jTextField2.getText(), Integer.parseInt(jTextField3.getText()));
-            temp = new DataOutputStream(socket.getOutputStream());
-        } catch (Exception e) {
-            jTextArea1.append(e.getMessage() + "\n");
-        }
         //Timer to notify the monitor
-        DataOutputStream out = temp;
         TimerTask t = new TimerTask() {
             public void run() {
                 try {
+                    socket = new Socket(jTextField2.getText(), Integer.parseInt(jTextField3.getText()));
+                    out = new DataOutputStream(socket.getOutputStream());
                     out.writeBytes(String.valueOf(id) + "\n");
                     out.flush();
+                    socket.close();
                 } catch (Exception e) {
-                    jTextArea1.append("Connection closed\n");
+                    jTextArea1.append(e.getMessage() + "\n");
                     return;
                 }
             }
         };
 
         Timer t1 = new Timer();
-        t1.schedule(t, 0, 5000);
+        t1.schedule(t, 0, 10000);
     }//GEN-LAST:event_jButton1ActionPerformed
 
     private void jTextField2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField2ActionPerformed
@@ -215,7 +212,6 @@ public class Server extends javax.swing.JFrame {
                 while (true) {
                     jTextArea1.append("Server is waiting for a new connection\n");
                     // wait for a new connection/client
-                    Socket clientSocket = null;
                     try {
                         clientSocket = serverSocket.accept();
                     } catch (IOException ex) {
