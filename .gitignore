@@ -101,3 +101,4 @@ nbactions.xml
 
 
 # End of https://www.gitignore.io/api/java,netbeans,intellij
+/PA2_T1G04/nbproject/private/
