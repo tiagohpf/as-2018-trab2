@@ -1,4 +1,4 @@
-package Cenas;
+package ServerManagement;
 
 /*
  * To change this template, choose Tools | Templates
@@ -18,23 +18,26 @@ import javax.swing.JTextArea;
  * dealing with the new incoming clients
  * @author Óscar Pereira
  */
-class ThreadEcho extends Thread {
+public class WorkDistributionThread extends Thread {
 
     private final Socket socket;
     private PrintWriter out = null;
     private BufferedReader in = null;
     private JTextArea j;
+    private int id;
 
     // constructo receives the socket
-    public ThreadEcho(Socket socket,JTextArea j) {
+    public WorkDistributionThread(Socket socket,JTextArea j,int id) {
         this.socket = socket;
         this.j = j;
+        this.id = id;
     }
     @Override
     public void run() {
         try {
             // socket´s output stream
             out = new PrintWriter(socket.getOutputStream(), true);
+            out.println(id);
             // socket's input stream
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while (true) {

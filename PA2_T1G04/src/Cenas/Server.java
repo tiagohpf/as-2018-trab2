@@ -222,8 +222,8 @@ public class Server extends javax.swing.JFrame {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     // create a new thread to deal with the new client
-                    ThreadEcho te = new ThreadEcho(clientSocket, jTextArea1);
-                    te.start();
+                    //WorkDistributionThread te = new WorkDistributionThread(clientSocket, jTextArea1);
+                    //te.start();
                 }
             }
 
