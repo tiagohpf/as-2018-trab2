@@ -1,32 +1,29 @@
-package ServerManagement;
-
 /*
- * To change this template, choose Tools | Templates
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package Server;
+
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import javax.swing.JTextArea;
 
 /**
- * This class implements the thread responsible for dealing with the new
- * incoming clients
  *
- * @author Óscar Pereira
+ * @author kanto
  */
-public class WorkDistributionThread extends Thread {
+public class MonitorThread extends Thread {
 
     private final Socket socket;
-    private PrintWriter out = null;
-    private BufferedReader in = null;
-    private JTextArea j;
-    private int id;
+    private final JTextArea j;
+    private final int id;
+    private PrintWriter out;
+    private BufferedReader in;
 
-    // constructo receives the socket
-    public WorkDistributionThread(Socket socket, JTextArea j, int id) {
+    public MonitorThread(Socket socket, JTextArea j, int id) {
         this.socket = socket;
         this.j = j;
         this.id = id;
@@ -42,22 +39,15 @@ public class WorkDistributionThread extends Thread {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             while (true) {
                 // wait for a message from the client
-                j.append("Thread is waiting for a new message\n");
                 String text = in.readLine();
                 // null message?
                 if (text == null) {
                     // end of communication with this client
-                    System.out.println("End of communication");
-                    break;
+                    j.append("Server " + id + " is down!\n");
+                    return;
                 }
-                j.append("Server received a new message: " + text + "\n");
-                // send echo to client
-                out.println("my echo (" + text + ")");
+                j.append("Server " + id + " is " + text + "\n");
             }
-            // close everything
-            socket.close();
-            out.close();
-            in.close();
         } catch (Exception e) {
         }
     }
