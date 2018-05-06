@@ -156,7 +156,7 @@ public class Client extends javax.swing.JFrame {
             out = new PrintWriter(mySocket.getOutputStream(), true);
             // socket's input stream
             in = new BufferedReader(new InputStreamReader(mySocket.getInputStream()));
-            jTextArea1.append("Connection is established with the Server\n");
+            jTextArea1.append("Connection is established with the Load Balancer\n");
             jButton1.setEnabled(false);
             jTextArea1.append("id = " + in.readLine() + "\n");
         } catch (UnknownHostException e) {

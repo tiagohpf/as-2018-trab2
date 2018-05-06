@@ -10,9 +10,10 @@ import Server.MonitorThread;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,6 +31,8 @@ public class LoadBalancer extends javax.swing.JFrame {
     private Socket serverSocket = null;
     private PrintWriter out = null;
     private BufferedReader in = null;
+    private ArrayList<ServerInfo> servers = new ArrayList<>();
+    private ReentrantLock rl = new ReentrantLock();
 
     private synchronized void incrementClientID() {
         clientID++;
@@ -153,10 +156,10 @@ public class LoadBalancer extends javax.swing.JFrame {
                 } catch (Exception e) {
                     jTextArea1.append(e.getMessage());
                 }
-                jTextArea1.append("Server is listening on port: " + Integer.parseInt(jTextField1.getText()) + "\n");
+                jTextArea1.append("LoadBalancer is listening on port: " + Integer.parseInt(jTextField1.getText()) + "\n");
                 jButton1.setEnabled(false);
                 while (true) {
-                    jTextArea1.append("Server is waiting for a new connection\n");
+                    jTextArea1.append("LoadBalancer is waiting for a new connection\n");
                     // wait for a new connection/client
                     try {
                         clientSocket = listeningClients.accept();
@@ -166,7 +169,7 @@ public class LoadBalancer extends javax.swing.JFrame {
                     }
                     incrementClientID();
                     //change this class to do the load balancing job for now just returns echo
-                    WorkDistributionThread te = new WorkDistributionThread(clientSocket, jTextArea1, clientID);
+                    WorkDistributionThread te = new WorkDistributionThread(clientSocket, jTextArea1, clientID,servers,rl);
                     te.start();
                 }
             }
@@ -192,9 +195,9 @@ public class LoadBalancer extends javax.swing.JFrame {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     incrementServerID();
-                    
+
                     //Thread to keep tabs on server status
-                    MonitorThread mt = new MonitorThread(serverSocket,jTextArea2,serverID);
+                    MonitorThread mt = new MonitorThread(serverSocket, jTextArea2, serverID,servers,rl);
                     mt.start();
                 }
             }
