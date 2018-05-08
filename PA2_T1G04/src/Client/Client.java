@@ -175,7 +175,7 @@ public class Client extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
-            jTextArea1.append("Result " + result + "\n");
+            jTextArea1.append(result + "\n");
         }
     }//GEN-LAST:event_jButton2ActionPerformed
 

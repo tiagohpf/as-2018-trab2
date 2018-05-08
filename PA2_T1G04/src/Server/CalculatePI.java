@@ -54,7 +54,7 @@ public class CalculatePI extends Thread {
             j.append("Computing PI\n");
             double value = compute(Long.parseLong(value0), Long.parseLong(value1));
             out.println(String.valueOf(value));
-            j.append("Values sent to LB");
+            j.append("Values sent to LB\n");
             socket.close();
             out.close();
             in.close();

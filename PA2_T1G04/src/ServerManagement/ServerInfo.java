@@ -13,16 +13,22 @@ public class ServerInfo {
     private int port;
     private InetAddress host;
     private int active_requests;
+    private int size;
 
-    public ServerInfo(int id, int port, InetAddress host) {
+    public ServerInfo(int id, int port, InetAddress host, int size) {
         this.id = id;
         this.port = port;
         this.active_requests = 0;
         this.host = host;
+        this.size = size;
     }
 
     public int getId() {
         return id;
+    }
+
+    public int getSize() {
+        return size;
     }
 
     public int getPort() {
@@ -49,13 +55,17 @@ public class ServerInfo {
         return active_requests;
     }
 
-    public void setActive_requests(int active_requests) {
-        this.active_requests = active_requests;
+    public synchronized void incrementRequests() {
+        this.active_requests++;
+    }
+
+    public synchronized void decrementRequests() {
+        this.active_requests--;
     }
 
     @Override
     public String toString() {
-        return "ServerInfo{" + "id=" + id + ", port=" + port + ", host=" + host + ", active_requests=" + active_requests + '}';
+        return "ServerInfo{" + "id=" + id + ", port=" + port + ", host=" + host + ", active_requests=" + active_requests + ", size=" + size + '}';
     }
 
 }

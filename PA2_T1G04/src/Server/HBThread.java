@@ -43,6 +43,7 @@ public class HBThread extends Thread {
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out.println(id);
             port = Integer.parseInt(in.readLine());
+            int size = Integer.parseInt(in.readLine());
             host = socket.getLocalAddress();
             rl.lock();
             try {
@@ -54,7 +55,7 @@ public class HBThread extends Thread {
                     }
                 }
                 if (!flag)
-                    servers.add(new ServerInfo(id, port, host));
+                    servers.add(new ServerInfo(id, port, host,size));
             } catch (Exception e) {
 
             } finally {

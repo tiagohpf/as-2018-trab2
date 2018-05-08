@@ -17,7 +17,7 @@ import javax.swing.JTextArea;
  * @author Óscar Pereira
  */
 public class WorkDistributionThread extends Thread {
-
+    
     private final Socket socket;
     private PrintWriter out = null;
     private BufferedReader in = null;
@@ -38,7 +38,62 @@ public class WorkDistributionThread extends Thread {
         this.servers = servers;
         this.rl = rl;
     }
-
+    
+    public void allocateToServer(String text) throws IOException {
+        try {
+            int i = 0;
+            rl.lock();
+            try {
+                boolean flag = false;
+                for (int j = 0; j < servers.size(); j++) {
+                    if (servers.get(j).getActive_requests() < servers.get(j).getSize() || servers.get(j).getSize() == 0) {
+                        if (servers.get(j).getActive_requests() <= servers.get(i).getActive_requests()) {
+                            i = j;
+                            flag = true;
+                        }
+                    }
+                }
+                
+                if (!flag) {
+                    out.println("Servers are busy!");
+                    return;
+                }
+            } catch (Exception e) {
+                
+            } finally {
+                rl.unlock();
+            }
+            
+            j.append("Client " + id + " allocated on server " + (i + 1) + "\n");
+            mySocket = new Socket(servers.get(i).getHost(), servers.get(i).getPort());
+            servers.get(i).incrementRequests();
+            // socket's output stream
+            server_out = new PrintWriter(mySocket.getOutputStream(), true);
+            // socket's input stream
+            server_in = new BufferedReader(new InputStreamReader(mySocket.getInputStream()));
+            String[] values = text.split(" ");
+            server_out.println(values[0]);
+            server_out.println(values[1]);
+            result = server_in.readLine();
+            server_out.close();
+            server_in.close();
+            mySocket.close();
+            servers.get(i).decrementRequests();
+            if (result == null) {
+                //out.println("Erro");
+                j.append("Reallocating request because server is down!\n");
+                allocateToServer(text);
+            } else {
+                out.println("Result " + result);
+            }
+        } catch (UnknownHostException e) {
+            j.append("Don't know about server host\n");
+        } catch (IOException e) {
+            j.append("Couldn't get I/O for the connection to server host\n");
+            out.println("Error\n");
+        }
+    }
+    
     @Override
     public void run() {
         try {
@@ -58,32 +113,11 @@ public class WorkDistributionThread extends Thread {
                     break;
                 }
                 j.append("Server received a new message: " + text + "\n");
-
+                
                 j.append(servers.toString() + "\n");
 
                 //connect to socket of the server
-                try {
-                    // create a socket
-                    mySocket = new Socket("localhost", servers.get(0).getPort());
-                    // socket's output stream
-                    server_out = new PrintWriter(mySocket.getOutputStream(), true);
-                    // socket's input stream
-                    server_in = new BufferedReader(new InputStreamReader(mySocket.getInputStream()));
-                    String[] values = text.split(" ");
-                    server_out.println(values[0]);
-                    server_out.println(values[1]);
-                } catch (UnknownHostException e) {
-                    j.append("Don't know about server host\n");
-                } catch (IOException e) {
-                    j.append("Couldn't get I/O for the connection to server host\n");
-                    out.println("Error\n");
-                }
-                result = server_in.readLine();
-                if (result == null) {
-                    out.println("Erro");
-                } else {
-                    out.println(result);
-                }
+                allocateToServer(text);
             }
             // close everything
             socket.close();
