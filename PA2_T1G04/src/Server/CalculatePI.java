@@ -1,17 +1,9 @@
 package Server;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.JTextArea;
 
 /**
@@ -27,7 +19,7 @@ public class CalculatePI extends Thread {
     private BufferedReader in = null;
     private JTextArea j = null;
 
-    // constructo receives the socket
+    // Constructor receives the socket
     public CalculatePI(Socket socket, JTextArea j) {
         this.socket = socket;
         this.j = j;

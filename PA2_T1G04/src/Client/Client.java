@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Client;
 
 import java.io.BufferedReader;
@@ -16,10 +11,10 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author kanto
+ * @author José Santos
+ * @author Tiago Faria
  */
 public class Client extends javax.swing.JFrame {
-
     private Socket mySocket;
     private PrintWriter out;
     private BufferedReader in;
@@ -169,7 +164,8 @@ public class Client extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
 
         if (jTextField3.getText().equals("") || jTextField4.getText().equals("")) {
-            jTextArea1.append("Faltam valores!\n");
+            // TODO: Change to message box
+            jTextArea1.append("Insert all fields.\n");
         } else {
             out.println(jTextField3.getText() + " " + jTextField4.getText());
             jTextArea1.append("Waiting for result from server\n");
@@ -179,7 +175,6 @@ public class Client extends javax.swing.JFrame {
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             }
-            // print echo
             jTextArea1.append("Result " + result + "\n");
         }
     }//GEN-LAST:event_jButton2ActionPerformed

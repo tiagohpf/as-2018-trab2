@@ -1,12 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ServerManagement;
 
-import Cenas.Server;
-import Server.MonitorThread;
+import Server.HBThread;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -14,23 +8,19 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
- * @author kanto
+ * @author José Santos
+ * @author Tiago Faria
  */
 public class LoadBalancer extends javax.swing.JFrame {
-
     private int clientID = 0;
     private int serverID = 0;
     private ServerSocket listeningClients = null;
     private Socket clientSocket = null;
     private ServerSocket monitor = null;
     private Socket serverSocket = null;
-    private PrintWriter out = null;
-    private BufferedReader in = null;
     private ArrayList<ServerInfo> servers = new ArrayList<>();
     private ReentrantLock rl = new ReentrantLock();
 
@@ -165,44 +155,43 @@ public class LoadBalancer extends javax.swing.JFrame {
                         clientSocket = listeningClients.accept();
                         jTextArea1.append("Client Connected\n");
                     } catch (IOException ex) {
-                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     incrementClientID();
                     //change this class to do the load balancing job for now just returns echo
-                    WorkDistributionThread te = new WorkDistributionThread(clientSocket, jTextArea1, clientID,servers,rl);
-                    te.start();
+                    WorkDistributionThread wdt = 
+                            new WorkDistributionThread(clientSocket, jTextArea1, clientID,servers,rl);
+                    wdt.start();
                 }
             }
         };
         clientsThread.start();
 
         //Thread to handle heartbeat
-        Thread monitorThread = new Thread() {
+        Thread hbThread = new Thread() {
             public void run() {
                 try {
                     monitor = new ServerSocket(Integer.parseInt(jTextField2.getText()));
                 } catch (Exception e) {
                     jTextArea2.append(e.getMessage() + "\n");
                 }
-                jTextArea2.append("Monitor is listening on port: " + Integer.parseInt(jTextField2.getText()) + "\n");
+                jTextArea2.append("Heartbeat is listening on port: " + Integer.parseInt(jTextField2.getText()) + "\n");
                 while (true) {
-                    jTextArea2.append("Monitor is waiting for a new connection\n");
+                    jTextArea2.append("Heartbeat is waiting for a new connection\n");
                     // wait for a new connection/client
                     try {
                         serverSocket = monitor.accept();
                         jTextArea2.append("Server Connected\n");
                     } catch (IOException ex) {
-                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     incrementServerID();
 
                     //Thread to keep tabs on server status
-                    MonitorThread mt = new MonitorThread(serverSocket, jTextArea2, serverID,servers,rl);
-                    mt.start();
+                    HBThread hb = new HBThread(serverSocket, jTextArea2, serverID,servers,rl);
+                    hb.start();
                 }
             }
         };
-        monitorThread.start();
+        hbThread.start();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

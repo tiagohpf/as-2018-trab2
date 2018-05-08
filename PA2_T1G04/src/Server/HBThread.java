@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package Server;
 
 import ServerManagement.ServerInfo;
@@ -17,10 +12,10 @@ import javax.swing.JTextArea;
 
 /**
  *
- * @author kanto
+ * @author José Santos
+ * @author Tiago Faria
  */
-public class MonitorThread extends Thread {
-
+public class HBThread extends Thread {
     private final Socket socket;
     private final JTextArea j;
     private final int id;
@@ -31,7 +26,7 @@ public class MonitorThread extends Thread {
     private int port;
     private InetAddress host;
 
-    public MonitorThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl) {
+    public HBThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl) {
         this.socket = socket;
         this.j = j;
         this.id = id;
@@ -58,10 +53,8 @@ public class MonitorThread extends Thread {
                         break;
                     }
                 }
-                if (flag == false) {
+                if (!flag)
                     servers.add(new ServerInfo(id, port, host));
-                }
-
             } catch (Exception e) {
 
             } finally {
