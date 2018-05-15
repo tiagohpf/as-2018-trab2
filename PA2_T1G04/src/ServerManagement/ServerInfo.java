@@ -13,7 +13,8 @@ public class ServerInfo {
     private int port;
     private InetAddress host;
     private int active_requests;
-    private int size;
+    private final int size;
+    private int threadId;
 
     public ServerInfo(int id, int port, InetAddress host, int size) {
         this.id = id;
@@ -21,6 +22,7 @@ public class ServerInfo {
         this.active_requests = 0;
         this.host = host;
         this.size = size;
+        this.threadId = 0;
     }
 
     public int getId() {
@@ -54,6 +56,10 @@ public class ServerInfo {
     public int getActive_requests() {
         return active_requests;
     }
+    
+    public synchronized void incrementThreadId() {
+        this.threadId++;
+    }
 
     public synchronized void incrementRequests() {
         this.active_requests++;
@@ -65,7 +71,6 @@ public class ServerInfo {
 
     @Override
     public String toString() {
-        return "ServerInfo{" + "id=" + id + ", port=" + port + ", host=" + host + ", active_requests=" + active_requests + ", size=" + size + '}';
+        return "ServerInfo{" + "id=" + id + ", port=" + port + ", host=" + host + ", active_requests=" + active_requests + ", size=" + size + ", threadId=" + threadId + '}';
     }
-
 }

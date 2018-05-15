@@ -65,6 +65,7 @@ public class WorkDistributionThread extends Thread {
             }
             
             j.append("Client " + id + " allocated on server " + (i + 1) + "\n");
+            servers.get(i).incrementThreadId();
             mySocket = new Socket(servers.get(i).getHost(), servers.get(i).getPort());
             servers.get(i).incrementRequests();
             // socket's output stream
