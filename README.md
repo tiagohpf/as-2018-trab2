@@ -5,6 +5,6 @@ Each client connects to one server with sockets and send it a request for execut
 
 ## How to Run
 1. Run some Clients and Servers
-  - Check and insert the ip's and ports
+    - Check and insert the ip's and ports
 2. Run the Load Balancer
-  - Check and insert the ports
+    - Check and insert the ports
