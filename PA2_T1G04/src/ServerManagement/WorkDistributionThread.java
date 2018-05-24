@@ -17,7 +17,7 @@ import javax.swing.JTextArea;
  * @author Óscar Pereira
  */
 public class WorkDistributionThread extends Thread {
-    
+
     private final Socket socket;
     private PrintWriter out = null;
     private BufferedReader in = null;
@@ -38,12 +38,17 @@ public class WorkDistributionThread extends Thread {
         this.servers = servers;
         this.rl = rl;
     }
-    
+
     public void allocateToServer(String text) throws IOException {
         try {
             int i = 0;
             rl.lock();
             try {
+
+                if (servers.isEmpty()) {
+                    out.println("There are no servers available!");
+                    return;
+                }
                 boolean flag = false;
                 for (int j = 0; j < servers.size(); j++) {
                     if (servers.get(j).getActive_requests() < servers.get(j).getSize() || servers.get(j).getSize() == 0) {
@@ -53,21 +58,26 @@ public class WorkDistributionThread extends Thread {
                         }
                     }
                 }
-                
                 if (!flag) {
                     out.println("Servers are busy!");
                     return;
                 }
             } catch (Exception e) {
-                
+
             } finally {
                 rl.unlock();
             }
-            
-            j.append("Client " + id + " allocated on server " + (i + 1) + "\n");
-            servers.get(i).incrementThreadId();
-            mySocket = new Socket(servers.get(i).getHost(), servers.get(i).getPort());
-            servers.get(i).incrementRequests();
+
+            rl.lock();
+            try {
+                servers.get(i).incrementThreadId();
+                j.append("Client " + id + " allocated on server " + (i + 1)
+                        + " on thread " + servers.get(i).getThreadId() + "\n");
+                mySocket = new Socket(servers.get(i).getHost(), servers.get(i).getPort());
+                servers.get(i).incrementRequests();
+            } finally {
+                rl.unlock();
+            }
             // socket's output stream
             server_out = new PrintWriter(mySocket.getOutputStream(), true);
             // socket's input stream
@@ -76,10 +86,17 @@ public class WorkDistributionThread extends Thread {
             server_out.println(values[0]);
             server_out.println(values[1]);
             result = server_in.readLine();
+
+            rl.lock();
+            try {
+                servers.get(i).decrementRequests();
+            } finally {
+                rl.unlock();
+            }
             server_out.close();
             server_in.close();
             mySocket.close();
-            servers.get(i).decrementRequests();
+
             if (result == null) {
                 //out.println("Erro");
                 j.append("Reallocating request because server is down!\n");
@@ -94,7 +111,7 @@ public class WorkDistributionThread extends Thread {
             out.println("Error\n");
         }
     }
-    
+
     @Override
     public void run() {
         try {
@@ -114,7 +131,6 @@ public class WorkDistributionThread extends Thread {
                     break;
                 }
                 j.append("Server received a new message: " + text + "\n");
-                
                 j.append(servers.toString() + "\n");
 
                 //connect to socket of the server

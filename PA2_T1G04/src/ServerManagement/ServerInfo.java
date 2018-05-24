@@ -57,6 +57,10 @@ public class ServerInfo {
         return active_requests;
     }
     
+    public int getThreadId() {
+        return threadId;
+    }
+    
     public synchronized void incrementThreadId() {
         this.threadId++;
     }
