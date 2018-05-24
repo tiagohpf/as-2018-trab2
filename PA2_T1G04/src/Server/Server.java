@@ -63,7 +63,7 @@ public class Server extends javax.swing.JFrame {
 
         jLabel2.setText("PORT");
 
-        jTextField1.setText("192.168.1.194");
+        jTextField1.setText("localhost");
 
         jTextField2.setText("5001");
 
@@ -118,7 +118,7 @@ public class Server extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jTextField3, javax.swing.GroupLayout.DEFAULT_SIZE, 93, Short.MAX_VALUE)
                     .addComponent(jTextField4))
-                .addContainerGap(15, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jScrollPane1)
@@ -203,7 +203,6 @@ public class Server extends javax.swing.JFrame {
                     // wait for a new connection/client
                     try {
                         clientSocket = listeningClients.accept();
-                        jTextArea1.append("Client Connected\n");
                     } catch (Exception e) {
 
                     }

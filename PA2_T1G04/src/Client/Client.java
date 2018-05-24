@@ -15,9 +15,12 @@ import java.util.logging.Logger;
  * @author Tiago Faria
  */
 public class Client extends javax.swing.JFrame {
+
     private Socket mySocket;
     private PrintWriter out;
     private BufferedReader in;
+    private int requestId;
+    private String id;
 
     /**
      * Creates new form Client
@@ -58,7 +61,7 @@ public class Client extends javax.swing.JFrame {
 
         jLabel4.setText("Delay");
 
-        jTextField1.setText("192.168.1.194");
+        jTextField1.setText("localhost");
 
         jTextField2.setText("5000");
 
@@ -153,7 +156,9 @@ public class Client extends javax.swing.JFrame {
             in = new BufferedReader(new InputStreamReader(mySocket.getInputStream()));
             jTextArea1.append("Connection is established with the Load Balancer\n");
             jButton1.setEnabled(false);
-            jTextArea1.append("id = " + in.readLine() + "\n");
+            id = in.readLine();
+            jTextArea1.append("id = " + id + "\n");
+            requestId = 0;
         } catch (UnknownHostException e) {
             jTextArea1.append("Don't know about host\n");
         } catch (IOException e) {
@@ -163,20 +168,27 @@ public class Client extends javax.swing.JFrame {
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
 
-        if (jTextField3.getText().equals("") || jTextField4.getText().equals("")) {
-            // TODO: Change to message box
-            jTextArea1.append("Insert all fields.\n");
-        } else {
-            out.println(jTextField3.getText() + " " + jTextField4.getText());
-            jTextArea1.append("Waiting for result from server\n");
-            String result = null;
-            try {
-                result = in.readLine();
-            } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        Thread request = new Thread() {
+            public void run() {
+                if (jTextField3.getText().equals("") || jTextField4.getText().equals("")) {
+                    // TODO: Change to message box
+                    jTextArea1.append("Insert all fields.\n");
+                } else {
+                    requestId++;
+                    out.println(jTextField3.getText() + " " + jTextField4.getText());
+                    out.println(requestId);
+                    jTextArea1.append("Sending request " + id + "|" + requestId + "|01|" + jTextField3.getText() + "|" + jTextField4.getText() + "\n");
+                    String result = null;
+                    try {
+                        result = in.readLine();
+                    } catch (IOException ex) {
+                        Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    jTextArea1.append(result + "\n");
+                }
             }
-            jTextArea1.append(result + "\n");
-        }
+        };
+        request.start();
     }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
