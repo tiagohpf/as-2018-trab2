@@ -48,6 +48,8 @@ public class WorkDistributionThread extends Thread {
             try {
 
                 if (servers.isEmpty()) {
+                    j.append("Result " + id + "|" + requestId + "|02|" + values[0] + "|" + values[1] + "\n");
+                    j.append("Rejecting request " + requestId + " from client " + id + "\n");
                     out.println("Result " + id + "|" + requestId + "|02|" + values[0] + "|" + values[1]);
                     return;
                 }
@@ -61,6 +63,8 @@ public class WorkDistributionThread extends Thread {
                     }
                 }
                 if (!flag) {
+                    j.append("Result " + id + "|" + requestId + "|02|" + values[0] + "|" + values[1] + "\n");
+                    j.append("Rejecting request " + requestId + " from client " + id + "\n");
                     out.println("Result " + id + "|" + requestId + "|02|" + values[0] + "|" + values[1]);
                     return;
                 }
