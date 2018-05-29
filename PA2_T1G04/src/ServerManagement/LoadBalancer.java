@@ -1,12 +1,13 @@
 package ServerManagement;
 
-import Server.HBThread;
+import Server.MonitorThread;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
@@ -15,6 +16,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Tiago Faria
  */
 public class LoadBalancer extends javax.swing.JFrame {
+
     private int clientID = 0;
     private int serverID = 0;
     private ServerSocket listeningClients = null;
@@ -22,7 +24,9 @@ public class LoadBalancer extends javax.swing.JFrame {
     private ServerSocket monitor = null;
     private Socket serverSocket = null;
     private ArrayList<ServerInfo> servers = new ArrayList<>();
+    private ArrayList<String> down = new ArrayList<>();
     private ReentrantLock rl = new ReentrantLock();
+    private Condition downnotify = rl.newCondition();
 
     private synchronized void incrementClientID() {
         clientID++;
@@ -158,16 +162,14 @@ public class LoadBalancer extends javax.swing.JFrame {
                     }
                     incrementClientID();
                     //change this class to do the load balancing job for now just returns echo
-                    WorkDistributionThread wdt = 
-                            new WorkDistributionThread(clientSocket, jTextArea1, clientID,servers,rl);
+                    WorkDistributionThread wdt = new WorkDistributionThread(clientSocket, jTextArea1, clientID, servers, rl, down, downnotify);
                     wdt.start();
                 }
             }
         };
         clientsThread.start();
-
         //Thread to handle heartbeat
-        Thread hbThread = new Thread() {
+        Thread mtThread = new Thread() {
             public void run() {
                 try {
                     monitor = new ServerSocket(Integer.parseInt(jTextField2.getText()));
@@ -185,13 +187,16 @@ public class LoadBalancer extends javax.swing.JFrame {
                     }
                     incrementServerID();
 
-                    //Thread to keep tabs on server status
-                    HBThread hb = new HBThread(serverSocket, jTextArea2, serverID,servers,rl);
-                    hb.start();
+                    //Thread to recieve HB
+                    MonitorThread mt = new MonitorThread(serverSocket, jTextArea2, serverID, servers, rl);
+                    mt.start();
+
+                    AlarmThread at = new AlarmThread(serverSocket, jTextArea2, serverID, servers, rl, down, downnotify);
+                    at.start();
                 }
             }
         };
-        hbThread.start();
+        mtThread.start();
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

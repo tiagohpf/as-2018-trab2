@@ -1,6 +1,7 @@
 package ServerManagement;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 /**
  *
@@ -15,6 +16,7 @@ public class ServerInfo {
     private int active_requests;
     private final int size;
     private int threadId;
+    private ArrayList<String> messages;
 
     public ServerInfo(int id, int port, InetAddress host, int size) {
         this.id = id;
@@ -23,6 +25,8 @@ public class ServerInfo {
         this.host = host;
         this.size = size;
         this.threadId = 0;
+        this.messages = new ArrayList<>();
+        this.messages.add("Alive");
     }
 
     public int getId() {
@@ -72,9 +76,22 @@ public class ServerInfo {
     public synchronized void decrementRequests() {
         this.active_requests--;
     }
+    
+    public void addMessage(String text){
+        this.messages.add(text);
+    }
+    
+    public int getMessagesSize(){
+        return this.messages.size();
+    }
+    
+    public void clearMessages(){
+        this.messages.clear();
+    }
 
     @Override
     public String toString() {
-        return "ServerInfo{" + "id=" + id + ", port=" + port + ", host=" + host + ", active_requests=" + active_requests + ", size=" + size + ", threadId=" + threadId + '}';
+        return "ServerInfo{" + "id=" + id + ", port=" + port + ", host=" + host + ", active_requests=" + active_requests + ", size=" + size + ", threadId=" + threadId + ", messages=" + messages + '}';
     }
+
 }

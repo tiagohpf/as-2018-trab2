@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 import javax.swing.JTextArea;
 
@@ -31,19 +32,24 @@ public class WorkDistributionThread extends Thread {
     private Socket mySocket;
     private String requestId;
     private String[] values;
+    private Condition downnotify;
+    private ArrayList<String> down;
+    private int i;
 
     // constructo receives the socket
-    public WorkDistributionThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl) {
+    public WorkDistributionThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl, ArrayList<String> down, Condition downnotify) {
         this.socket = socket;
         this.j = j;
         this.id = id;
         this.servers = servers;
         this.rl = rl;
+        this.down = down;
+        this.downnotify = downnotify;
     }
 
-    public void allocateToServer() throws IOException {
+    public void allocateToServer() throws IOException, InterruptedException {
         try {
-            int i = 0;
+            i = 0;
             rl.lock();
             try {
 
@@ -92,6 +98,26 @@ public class WorkDistributionThread extends Thread {
             server_out.println(values[1]);
             server_out.println(id);
             server_out.println(requestId);
+
+            Thread t = new Thread() {
+                public void run() {
+                    rl.lock();
+                    try {
+                        while (down.isEmpty()) {
+                            downnotify.await();
+                        }
+                        if (down.contains(String.valueOf(i))) {
+                            allocateToServer();
+                        }
+                        down.clear();
+                    } catch (Exception e) {
+                    } finally {
+                        rl.unlock();
+                    }
+                }
+            };
+            t.start();
+
             result = server_in.readLine();
 
             rl.lock();
@@ -104,18 +130,13 @@ public class WorkDistributionThread extends Thread {
             server_in.close();
             mySocket.close();
 
-            if (result == null) {
-                //out.println("Erro");
-                j.append("Trying to reallocate request because server is down!\n");
-                allocateToServer();
-            } else {
+            if (result != null) {
                 out.println("Result " + result);
             }
         } catch (UnknownHostException e) {
             j.append("Don't know about server host\n");
         } catch (IOException e) {
             j.append("Couldn't get I/O for the connection to server host\n");
-            out.println("Error\n");
         }
     }
 

@@ -15,7 +15,8 @@ import javax.swing.JTextArea;
  * @author José Santos
  * @author Tiago Faria
  */
-public class HBThread extends Thread {
+public class MonitorThread extends Thread {
+
     private final Socket socket;
     private final JTextArea j;
     private final int id;
@@ -26,7 +27,7 @@ public class HBThread extends Thread {
     private int port;
     private InetAddress host;
 
-    public HBThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl) {
+    public MonitorThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl) {
         this.socket = socket;
         this.j = j;
         this.id = id;
@@ -47,15 +48,7 @@ public class HBThread extends Thread {
             host = socket.getLocalAddress();
             rl.lock();
             try {
-                boolean flag = false;
-                for (int i = 0; i < servers.size(); i++) {
-                    if (servers.get(i).getId() == id) {
-                        flag = true;
-                        break;
-                    }
-                }
-                if (!flag)
-                    servers.add(new ServerInfo(id, port, host,size));
+                servers.add(new ServerInfo(id, port, host, size));
             } catch (Exception e) {
 
             } finally {
@@ -65,7 +58,7 @@ public class HBThread extends Thread {
                 // wait for a message from the client
                 String text = in.readLine();
                 // null message?
-                if (text == null) {
+                /*if (text == null) {
                     // end of communication with this client
                     j.append("Server " + id + " is down!\n");
                     rl.lock();
@@ -86,9 +79,27 @@ public class HBThread extends Thread {
                         rl.unlock();
                     }
                     return;
+                }*/
+                if (text != null) {
+                    j.append("Server " + id + " is " + text + "\n");
+                    rl.lock();
+                    try {
+                        int index = -1;
+                        for (int i = 0; i < servers.size(); i++) {
+                            if (servers.get(i).getId() == id) {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index != -1) {
+                            servers.get(index).addMessage(text);
+                        }
+                    } catch (Exception e) {
+
+                    } finally {
+                        rl.unlock();
+                    }
                 }
-                j.append("Server " + id + " is " + text + "\n");
-                System.out.println(servers.toString());
             }
         } catch (Exception e) {
         }
