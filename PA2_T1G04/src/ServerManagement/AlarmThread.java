@@ -66,16 +66,8 @@ public class AlarmThread extends Thread {
                         servers.remove(index);
                         j.append("Server " + id + " is down!\n");
                         System.out.println(servers.toString());
-                        rl.lock();
-                        try {
-                            down.add(String.valueOf(index));
-                            downnotify.signalAll();
-                        } catch (Exception e) {
-
-                        } finally {
-                            rl.unlock();
-                        }
-                        return;
+                        down.add(String.valueOf(index));
+                        downnotify.signalAll();
                     }
                 }
             } catch (Exception e) {
