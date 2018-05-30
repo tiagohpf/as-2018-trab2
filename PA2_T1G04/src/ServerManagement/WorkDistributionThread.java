@@ -9,6 +9,8 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JTextArea;
 
 /**
@@ -33,11 +35,11 @@ public class WorkDistributionThread extends Thread {
     private String requestId;
     private String[] values;
     private Condition downnotify;
-    private ArrayList<String> down;
+    private ArrayList<ServerInfo> down;
     private int i;
 
     // constructo receives the socket
-    public WorkDistributionThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl, ArrayList<String> down, Condition downnotify) {
+    public WorkDistributionThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl, ArrayList<ServerInfo> down, Condition downnotify) {
         this.socket = socket;
         this.j = j;
         this.id = id;
@@ -106,10 +108,37 @@ public class WorkDistributionThread extends Thread {
                         while (down.isEmpty()) {
                             downnotify.await();
                         }
-                        if (down.contains(String.valueOf(i))) {
+                        for (ServerInfo s : down) {
+                            if (s.getId() == (i + 1)) {
+                                s.decrementRequests();
+                                Thread reallocate = new Thread() {
+
+                                    public void run() {
+                                        try {
+                                            allocateToServer();
+                                        } catch (Exception e) {
+
+                                        }
+                                    }
+                                };
+                                reallocate.start();
+                            }
+                        }
+
+                        boolean flag = true;
+                        for (ServerInfo s : down) {
+                            if (s.getActive_requests() != 0) {
+                                flag = false;
+                            }
+                        }
+                        if (flag) {
+                            j.append("All requests reallocated!\n");
+                            down.clear();
+                        }
+                        /*if (down.contains(String.valueOf(i))) {
                             allocateToServer();
                         }
-                        down.clear();
+                        down.clear();*/
                     } catch (Exception e) {
                     } finally {
                         rl.unlock();
@@ -120,17 +149,17 @@ public class WorkDistributionThread extends Thread {
 
             result = server_in.readLine();
 
-            rl.lock();
-            try {
-                servers.get(i).decrementRequests();
-            } finally {
-                rl.unlock();
-            }
             server_out.close();
             server_in.close();
             mySocket.close();
 
             if (result != null) {
+                rl.lock();
+                try {
+                    servers.get(i).decrementRequests();
+                } finally {
+                    rl.unlock();
+                }
                 out.println("Result " + result);
             }
         } catch (UnknownHostException e) {

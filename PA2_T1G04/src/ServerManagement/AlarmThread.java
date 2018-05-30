@@ -30,13 +30,14 @@ public class AlarmThread extends Thread {
     private PrintWriter out;
     private BufferedReader in;
     private ArrayList<ServerInfo> servers;
-    private ArrayList<String> down;
+    private ArrayList<ServerInfo> down;
     private ReentrantLock rl;
     private Condition downnotify;
     private int port;
     private InetAddress host;
+    private int index;
 
-    public AlarmThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl, ArrayList<String> down, Condition downnotify) {
+    public AlarmThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl, ArrayList<ServerInfo> down, Condition downnotify) {
         this.socket = socket;
         this.j = j;
         this.id = id;
@@ -52,7 +53,7 @@ public class AlarmThread extends Thread {
         while (true) {
             rl.lock();
             try {
-                int index = -1;
+                index = -1;
                 for (int i = 0; i < servers.size(); i++) {
                     if (servers.get(i).getId() == id) {
                         index = i;
@@ -63,11 +64,12 @@ public class AlarmThread extends Thread {
                     if (servers.get(index).getMessagesSize() != 0) {
                         servers.get(index).clearMessages();
                     } else {
-                        servers.remove(index);
                         j.append("Server " + id + " is down!\n");
                         System.out.println(servers.toString());
-                        down.add(String.valueOf(index));
+
+                        down.add(servers.get(index));
                         downnotify.signalAll();
+                        servers.remove(index);
                     }
                 }
             } catch (Exception e) {

@@ -24,7 +24,7 @@ public class LoadBalancer extends javax.swing.JFrame {
     private ServerSocket monitor = null;
     private Socket serverSocket = null;
     private ArrayList<ServerInfo> servers = new ArrayList<>();
-    private ArrayList<String> down = new ArrayList<>();
+    private ArrayList<ServerInfo> down = new ArrayList<>();
     private ReentrantLock rl = new ReentrantLock();
     private Condition downnotify = rl.newCondition();
 
