@@ -57,29 +57,6 @@ public class MonitorThread extends Thread {
             while (true) {
                 // wait for a message from the client
                 String text = in.readLine();
-                // null message?
-                /*if (text == null) {
-                    // end of communication with this client
-                    j.append("Server " + id + " is down!\n");
-                    rl.lock();
-                    try {
-                        int index = -1;
-                        for (int i = 0; i < servers.size(); i++) {
-                            if (servers.get(i).getId() == id) {
-                                index = i;
-                                break;
-                            }
-                        }
-                        if (index != -1) {
-                            servers.remove(index);
-                        }
-                    } catch (Exception e) {
-
-                    } finally {
-                        rl.unlock();
-                    }
-                    return;
-                }*/
                 if (text != null) {
                     j.append("Server " + id + " is " + text + "\n");
                     rl.lock();

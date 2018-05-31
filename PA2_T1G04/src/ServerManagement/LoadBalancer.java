@@ -176,9 +176,9 @@ public class LoadBalancer extends javax.swing.JFrame {
                 } catch (Exception e) {
                     jTextArea2.append(e.getMessage() + "\n");
                 }
-                jTextArea2.append("Heartbeat is listening on port: " + Integer.parseInt(jTextField2.getText()) + "\n");
+                jTextArea2.append("Monitor is listening on port: " + Integer.parseInt(jTextField2.getText()) + "\n");
                 while (true) {
-                    jTextArea2.append("Heartbeat is waiting for a new connection\n");
+                    jTextArea2.append("Monitor is waiting for a new connection\n");
                     // wait for a new connection/client
                     try {
                         serverSocket = monitor.accept();
@@ -191,8 +191,8 @@ public class LoadBalancer extends javax.swing.JFrame {
                     MonitorThread mt = new MonitorThread(serverSocket, jTextArea2, serverID, servers, rl);
                     mt.start();
 
-                    AlarmThread at = new AlarmThread(serverSocket, jTextArea2, serverID, servers, rl, down, downnotify);
-                    at.start();
+                    HearthbeatThread hb = new HearthbeatThread(serverSocket, jTextArea2, serverID, servers, rl, down, downnotify);
+                    hb.start();
                 }
             }
         };

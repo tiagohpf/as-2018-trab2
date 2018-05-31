@@ -65,15 +65,15 @@ public class ServerInfo {
         return threadId;
     }
     
-    public synchronized void incrementThreadId() {
+    public void incrementThreadId() {
         this.threadId++;
     }
 
-    public synchronized void incrementRequests() {
+    public void incrementRequests() {
         this.active_requests++;
     }
 
-    public synchronized void decrementRequests() {
+    public void decrementRequests() {
         this.active_requests--;
     }
     

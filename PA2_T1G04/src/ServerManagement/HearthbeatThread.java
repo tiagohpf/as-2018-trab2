@@ -22,7 +22,7 @@ import javax.swing.JTextArea;
  *
  * @author kanto
  */
-public class AlarmThread extends Thread {
+public class HearthbeatThread extends Thread {
 
     private final Socket socket;
     private final JTextArea j;
@@ -37,7 +37,7 @@ public class AlarmThread extends Thread {
     private InetAddress host;
     private int index;
 
-    public AlarmThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl, ArrayList<ServerInfo> down, Condition downnotify) {
+    public HearthbeatThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl, ArrayList<ServerInfo> down, Condition downnotify) {
         this.socket = socket;
         this.j = j;
         this.id = id;

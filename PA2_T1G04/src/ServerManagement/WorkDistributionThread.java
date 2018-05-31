@@ -135,10 +135,6 @@ public class WorkDistributionThread extends Thread {
                             j.append("All requests reallocated!\n");
                             down.clear();
                         }
-                        /*if (down.contains(String.valueOf(i))) {
-                            allocateToServer();
-                        }
-                        down.clear();*/
                     } catch (Exception e) {
                     } finally {
                         rl.unlock();
