@@ -1,4 +1,4 @@
-package Server;
+package ServerManagement;
 
 import ServerManagement.ServerInfo;
 import java.io.BufferedReader;
