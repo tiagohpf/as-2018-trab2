@@ -14,6 +14,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -194,7 +195,8 @@ public class Server extends javax.swing.JFrame {
                 try {
                     listeningClients = new ServerSocket(Integer.parseInt(jTextField3.getText()));
                 } catch (Exception e) {
-                    jTextArea1.append(e.getMessage());
+                    JOptionPane.showMessageDialog(jTextArea1, "Port for request already in use");
+                    System.exit(0);
                 }
                 jTextArea1.append("Server is listening on port: " + Integer.parseInt(jTextField3.getText()) + "\n");
                 jButton1.setEnabled(false);

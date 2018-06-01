@@ -177,7 +177,8 @@ public class Client extends javax.swing.JFrame {
                     requestId++;
                     out.println(jTextField3.getText() + " " + jTextField4.getText());
                     out.println(requestId);
-                    jTextArea1.append("Sending request " + id + "|" + requestId + "|01|" + jTextField3.getText() + "|" + jTextField4.getText() + "\n");
+                    jTextArea1.append("Request: " + id + " | " + requestId 
+                            + " | 01 | " + jTextField3.getText() + " | " + jTextField4.getText() + "\n");
                     String result = null;
                     try {
                         result = in.readLine();

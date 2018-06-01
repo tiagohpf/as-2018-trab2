@@ -91,7 +91,7 @@ public class ServerInfo {
 
     @Override
     public String toString() {
-        return "ServerInfo{" + "id=" + id + ", port=" + port + ", host=" + host + ", active_requests=" + active_requests + ", size=" + size + ", threadId=" + threadId + ", messages=" + messages + '}';
+        return "Server: {" + "id=" + id + ", port=" + port + ", host=" + host + ", active_requests=" + active_requests + ", size=" + size + ", threadId=" + threadId + ", messages=" + messages + '}';
     }
 
 }

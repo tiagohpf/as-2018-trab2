@@ -1,9 +1,7 @@
 package ServerManagement;
 
 import Server.MonitorThread;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -26,7 +24,7 @@ public class LoadBalancer extends javax.swing.JFrame {
     private ArrayList<ServerInfo> servers = new ArrayList<>();
     private ArrayList<ServerInfo> down = new ArrayList<>();
     private ReentrantLock rl = new ReentrantLock();
-    private Condition downnotify = rl.newCondition();
+    private Condition down_notify = rl.newCondition();
 
     private synchronized void incrementClientID() {
         clientID++;
@@ -157,12 +155,11 @@ public class LoadBalancer extends javax.swing.JFrame {
                     // wait for a new connection/client
                     try {
                         clientSocket = listeningClients.accept();
-                        jTextArea1.append("Client Connected\n");
                     } catch (IOException ex) {
                     }
                     incrementClientID();
                     //change this class to do the load balancing job for now just returns echo
-                    WorkDistributionThread wdt = new WorkDistributionThread(clientSocket, jTextArea1, clientID, servers, rl, down, downnotify);
+                    WorkDistributionThread wdt = new WorkDistributionThread(clientSocket, jTextArea1, clientID, servers, rl, down, down_notify);
                     wdt.start();
                 }
             }
@@ -182,7 +179,6 @@ public class LoadBalancer extends javax.swing.JFrame {
                     // wait for a new connection/client
                     try {
                         serverSocket = monitor.accept();
-                        jTextArea2.append("Server Connected\n");
                     } catch (IOException ex) {
                     }
                     incrementServerID();
@@ -191,7 +187,7 @@ public class LoadBalancer extends javax.swing.JFrame {
                     MonitorThread mt = new MonitorThread(serverSocket, jTextArea2, serverID, servers, rl);
                     mt.start();
 
-                    HearthbeatThread hb = new HearthbeatThread(serverSocket, jTextArea2, serverID, servers, rl, down, downnotify);
+                    HearthbeatThread hb = new HearthbeatThread(serverSocket, jTextArea2, serverID, servers, rl, down, down_notify);
                     hb.start();
                 }
             }

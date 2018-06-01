@@ -9,18 +9,16 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JTextArea;
 
 /**
  * This class implements the thread responsible for dealing with the new
  * incoming clients
  *
- * @author Óscar Pereira
+ * @author José Santos
+ * @author Tiago Faria
  */
 public class WorkDistributionThread extends Thread {
-
     private final Socket socket;
     private PrintWriter out = null;
     private BufferedReader in = null;
@@ -34,31 +32,32 @@ public class WorkDistributionThread extends Thread {
     private Socket mySocket;
     private String requestId;
     private String[] values;
-    private Condition downnotify;
+    private Condition down_notify;
     private ArrayList<ServerInfo> down;
     private int i;
 
-    // constructo receives the socket
-    public WorkDistributionThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, ReentrantLock rl, ArrayList<ServerInfo> down, Condition downnotify) {
+    public WorkDistributionThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, 
+            ReentrantLock rl, ArrayList<ServerInfo> down, Condition downnotify) {
         this.socket = socket;
         this.j = j;
         this.id = id;
         this.servers = servers;
         this.rl = rl;
         this.down = down;
-        this.downnotify = downnotify;
+        this.down_notify = downnotify;
     }
 
     public void allocateToServer() throws IOException, InterruptedException {
         try {
             i = 0;
             rl.lock();
+            for (ServerInfo server : servers)
+                j.append(server.toString() + "\n");
             try {
-
                 if (servers.isEmpty()) {
-                    j.append("Result " + id + "|" + requestId + "|02|" + values[0] + "|" + values[1] + "\n");
+                    j.append("Result: " + id + " | " + requestId + " | 02 | " 
+                            + values[0] + " | " + values[1] + "\n");
                     j.append("Rejecting request " + requestId + " from client " + id + "\n");
-                    out.println("Result " + id + "|" + requestId + "|02|" + values[0] + "|" + values[1]);
                     return;
                 }
                 boolean flag = false;
@@ -71,9 +70,9 @@ public class WorkDistributionThread extends Thread {
                     }
                 }
                 if (!flag) {
-                    j.append("Result " + id + "|" + requestId + "|02|" + values[0] + "|" + values[1] + "\n");
+                    j.append("Result: " + id + " | " + requestId + " | 02 | " 
+                            + values[0] + " | " + values[1] + "\n");
                     j.append("Rejecting request " + requestId + " from client " + id + "\n");
-                    out.println("Result " + id + "|" + requestId + "|02|" + values[0] + "|" + values[1]);
                     return;
                 }
             } catch (Exception e) {
@@ -106,7 +105,7 @@ public class WorkDistributionThread extends Thread {
                     rl.lock();
                     try {
                         while (down.isEmpty()) {
-                            downnotify.await();
+                            down_notify.await();
                         }
                         for (ServerInfo s : down) {
                             if (s.getId() == (i + 1)) {
@@ -173,6 +172,7 @@ public class WorkDistributionThread extends Thread {
             out.println(id);
             // socket's input stream
             in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            j.append("Client " + id + " is connected\n");
             while (true) {
                 // wait for a message from the client
                 //j.append("Thread is waiting for a new message\n");
@@ -180,14 +180,13 @@ public class WorkDistributionThread extends Thread {
                 requestId = in.readLine();
                 // null message?
                 if (text == null) {
-                    // end of communication with this client
+                    // End of communication with this client
                     System.out.println("End of communication");
                     break;
                 }
                 values = text.split(" ");
-                j.append("Server received a new request: " + id + "|" + requestId + "|01|" + values[0] + "|" + values[1] + "\n");
-                j.append(servers.toString() + "\n");
-
+                j.append("Server received a new request: " + id + " | " + requestId + " | 01 |" 
+                        + values[0] + " | " + values[1] + "\n");
                 //connect to socket of the server
                 allocateToServer();
             }

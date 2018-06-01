@@ -49,6 +49,7 @@ public class MonitorThread extends Thread {
             rl.lock();
             try {
                 servers.add(new ServerInfo(id, port, host, size));
+                j.append("Server " + id + " is connected\n");
             } catch (Exception e) {
 
             } finally {

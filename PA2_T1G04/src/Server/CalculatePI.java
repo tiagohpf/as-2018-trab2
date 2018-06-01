@@ -10,7 +10,8 @@ import javax.swing.JTextArea;
  * This class implements the thread responsible for dealing with the new
  * incoming clients
  *
- * @author Óscar Pereira
+ * @author José Santos
+ * @author Tiago Faria
  */
 public class CalculatePI extends Thread {
 
@@ -52,11 +53,13 @@ public class CalculatePI extends Thread {
             String value1 = in.readLine();
             String id = in.readLine();
             String requestId = in.readLine();
-            j.append("Request " + id + "|" + requestId + "|01|" + value0 + "|" + value1+"\n");
+            j.append("Request " + id + " | " + requestId + " | 01 |" + value0 + " | " + value1+"\n");
             j.append("Computing PI\n");
             double value = compute(Long.parseLong(value0), Long.parseLong(value1));
-            out.println(id + "|" + requestId + "|03|" + value0 + "|" + value1 + "|" + String.valueOf(value));
-            j.append("Result " + id + "|" + requestId + "|03|" + value0 + "|" + value1 + "|" + String.valueOf(value)+"\n");
+            out.println(id + " | " + requestId + " | 03 |" + 
+                    value0 + " | " + value1 + " | " + String.valueOf(value));
+            j.append("Result: " + id + " | " + requestId + " | 03 |" 
+                    + value0 + " | " + value1 + " | " + String.valueOf(value)+"\n");
             socket.close();
             out.close();
             in.close();
