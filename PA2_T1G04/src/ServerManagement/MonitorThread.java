@@ -1,6 +1,5 @@
-package Server;
+package ServerManagement;
 
-import ServerManagement.ServerInfo;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
