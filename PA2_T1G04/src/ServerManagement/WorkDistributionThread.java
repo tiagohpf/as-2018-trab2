@@ -19,6 +19,7 @@ import javax.swing.JTextArea;
  * @author Tiago Faria
  */
 public class WorkDistributionThread extends Thread {
+
     private final Socket socket;
     private PrintWriter out = null;
     private BufferedReader in = null;
@@ -36,7 +37,7 @@ public class WorkDistributionThread extends Thread {
     private ArrayList<ServerInfo> down;
     private int i;
 
-    public WorkDistributionThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers, 
+    public WorkDistributionThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers,
             ReentrantLock rl, ArrayList<ServerInfo> down, Condition downnotify) {
         this.socket = socket;
         this.j = j;
@@ -51,13 +52,15 @@ public class WorkDistributionThread extends Thread {
         try {
             i = 0;
             rl.lock();
-            for (ServerInfo server : servers)
+            for (ServerInfo server : servers) {
                 j.append(server.toString() + "\n");
+            }
             try {
                 if (servers.isEmpty()) {
-                    j.append("Result: " + id + " | " + requestId + " | 02 | " 
+                    j.append("Result: " + id + " | " + requestId + " | 02 | "
                             + values[0] + " | " + values[1] + "\n");
                     j.append("Rejecting request " + requestId + " from client " + id + "\n");
+                    out.println("Result " + id + " | " + requestId + "| 02 | " + values[0] + " | " + values[1]);
                     return;
                 }
                 boolean flag = false;
@@ -70,9 +73,10 @@ public class WorkDistributionThread extends Thread {
                     }
                 }
                 if (!flag) {
-                    j.append("Result: " + id + " | " + requestId + " | 02 | " 
+                    j.append("Result: " + id + " | " + requestId + " | 02 | "
                             + values[0] + " | " + values[1] + "\n");
                     j.append("Rejecting request " + requestId + " from client " + id + "\n");
+                    out.println("Result " + id + " | " + requestId + "| 02 | " + values[0] + " | " + values[1]);
                     return;
                 }
             } catch (Exception e) {
@@ -158,9 +162,9 @@ public class WorkDistributionThread extends Thread {
                 out.println("Result " + result);
             }
         } catch (UnknownHostException e) {
-            j.append("Don't know about server host\n");
+            //j.append("Don't know about server host\n");
         } catch (IOException e) {
-            j.append("Couldn't get I/O for the connection to server host\n");
+            //j.append("Couldn't get I/O for the connection to server host\n");
         }
     }
 
@@ -185,7 +189,7 @@ public class WorkDistributionThread extends Thread {
                     break;
                 }
                 values = text.split(" ");
-                j.append("Server received a new request: " + id + " | " + requestId + " | 01 |" 
+                j.append("Server received a new request: " + id + " | " + requestId + " | 01 |"
                         + values[0] + " | " + values[1] + "\n");
                 //connect to socket of the server
                 allocateToServer();

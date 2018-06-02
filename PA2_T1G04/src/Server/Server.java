@@ -183,7 +183,7 @@ public class Server extends javax.swing.JFrame {
                 while (true) {
                     out.println("Alive!");
                     try {
-                        sleep(5000);
+                        sleep(1000);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }

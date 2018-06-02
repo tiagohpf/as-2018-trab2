@@ -201,7 +201,7 @@ public class LoadBalancer extends javax.swing.JFrame {
                     MonitorThread mt = new MonitorThread(serverSocket, jTextArea2, serverID, servers, rl);
                     mt.start();
 
-                    HearthbeatThread hb = new HearthbeatThread(serverSocket, jTextArea2, serverID, servers, rl, down, down_notify);
+                    HearthbeatThread hb = new HearthbeatThread(serverSocket, jTextArea2,jTextArea1, serverID, servers, rl, down, down_notify);
                     hb.start();
                 }
             }
