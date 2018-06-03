@@ -38,7 +38,7 @@ public class HearthbeatThread extends Thread {
     private InetAddress host;
     private int index;
 
-    public HearthbeatThread(Socket socket, JTextArea j,JTextArea j1, int id, ArrayList<ServerInfo> servers, ReentrantLock rl, ArrayList<ServerInfo> down, Condition downnotify) {
+    public HearthbeatThread(Socket socket, JTextArea j, JTextArea j1, int id, ArrayList<ServerInfo> servers, ReentrantLock rl, ArrayList<ServerInfo> down, Condition downnotify) {
         this.socket = socket;
         this.j = j;
         this.id = id;
@@ -66,6 +66,7 @@ public class HearthbeatThread extends Thread {
                     if (servers.get(index).getMessagesSize() != 0) {
                         servers.get(index).clearMessages();
                     } else {
+                        //j.append(servers.get(index).getId() + " " +index + "\n");
                         j.append("Server " + id + " is down!\n");
                         System.out.println(servers.toString());
                         j1.append("Server down detected, starting reallocation process\n");

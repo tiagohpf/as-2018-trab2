@@ -36,6 +36,7 @@ public class WorkDistributionThread extends Thread {
     private Condition down_notify;
     private ArrayList<ServerInfo> down;
     private int i;
+    private int server_id;
 
     public WorkDistributionThread(Socket socket, JTextArea j, int id, ArrayList<ServerInfo> servers,
             ReentrantLock rl, ArrayList<ServerInfo> down, Condition downnotify) {
@@ -87,6 +88,7 @@ public class WorkDistributionThread extends Thread {
 
             rl.lock();
             try {
+                server_id = servers.get(i).getId();
                 servers.get(i).incrementThreadId();
                 j.append("Client " + id + " allocated on server " + servers.get(i).getId()
                         + " on thread " + servers.get(i).getThreadId() + "\n");
@@ -112,8 +114,8 @@ public class WorkDistributionThread extends Thread {
                             down_notify.await();
                         }
                         for (ServerInfo s : down) {
-                            //System.out.println(s.getId() + " " + servers.get(i).getId() + " " + (i + 1));
-                            if (s.getId() == servers.get(i).getId() - 1) {
+                            //System.out.println(s.getId() + " " + servers.get(i).getId() + " " + i + " " + server_id);
+                            if (s.getId() == server_id) {
                                 s.decrementRequests();
                                 Thread reallocate = new Thread() {
 
