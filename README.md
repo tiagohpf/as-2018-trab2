@@ -4,7 +4,8 @@ With the calculation of PI, a plataform is designed and developed using tactics 
 Each client connects to one server with sockets and send it a request for execute the operation
 
 ## How to Run
-1. Run some Clients and Servers
-    - Check and insert the ip's and ports
-2. Run the Load Balancer
+1. Run the Load Balancer
     - Check and insert the ports
+2. Run some Clients and Servers
+    - Check and insert the ip's and ports
+    - You can't use the same port for request in different servers
