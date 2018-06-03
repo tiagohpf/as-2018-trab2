@@ -87,9 +87,9 @@ public class LoadBalancer extends javax.swing.JFrame {
         jTextArea2.setRows(5);
         jScrollPane2.setViewportView(jTextArea2);
 
-        jLabel3.setText("Heartbeat Messages:");
+        jLabel3.setText("Monitor Messages:");
 
-        jLabel4.setText("Monitor Messages:");
+        jLabel4.setText("LoadBalancer Messages:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

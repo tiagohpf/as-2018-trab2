@@ -155,12 +155,12 @@
     </Container>
     <Component class="javax.swing.JLabel" name="jLabel3">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Heartbeat Messages:"/>
+        <Property name="text" type="java.lang.String" value="Monitor Messages:"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Monitor Messages:"/>
+        <Property name="text" type="java.lang.String" value="LoadBalancer Messages:"/>
       </Properties>
     </Component>
   </SubComponents>
