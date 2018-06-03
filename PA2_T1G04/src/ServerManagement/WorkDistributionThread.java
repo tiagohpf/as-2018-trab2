@@ -50,7 +50,6 @@ public class WorkDistributionThread extends Thread {
 
     public void allocateToServer() throws IOException, InterruptedException {
         try {
-            j.append("Inside Allocate!");
             rl.lock();
             try {
                 for (ServerInfo server : servers) {
