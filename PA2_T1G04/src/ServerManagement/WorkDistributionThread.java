@@ -50,12 +50,12 @@ public class WorkDistributionThread extends Thread {
 
     public void allocateToServer() throws IOException, InterruptedException {
         try {
-            i = 0;
+            j.append("Inside Allocate!");
             rl.lock();
-            for (ServerInfo server : servers) {
-                j.append(server.toString() + "\n");
-            }
             try {
+                for (ServerInfo server : servers) {
+                    j.append(server.toString() + "\n");
+                }
                 if (servers.isEmpty()) {
                     j.append("Result: " + id + " | " + requestId + " | 02 | "
                             + values[0] + " | " + values[1] + "\n");
@@ -63,6 +63,7 @@ public class WorkDistributionThread extends Thread {
                     out.println("Result " + id + " | " + requestId + "| 02 | " + values[0] + " | " + values[1]);
                     return;
                 }
+                i = 0;
                 boolean flag = false;
                 for (int j = 0; j < servers.size(); j++) {
                     if (servers.get(j).getActive_requests() < servers.get(j).getSize() || servers.get(j).getSize() == 0) {
@@ -88,7 +89,7 @@ public class WorkDistributionThread extends Thread {
             rl.lock();
             try {
                 servers.get(i).incrementThreadId();
-                j.append("Client " + id + " allocated on server " + (i + 1)
+                j.append("Client " + id + " allocated on server " + servers.get(i).getId()
                         + " on thread " + servers.get(i).getThreadId() + "\n");
                 mySocket = new Socket(servers.get(i).getHost(), servers.get(i).getPort());
                 servers.get(i).incrementRequests();
@@ -112,7 +113,8 @@ public class WorkDistributionThread extends Thread {
                             down_notify.await();
                         }
                         for (ServerInfo s : down) {
-                            if (s.getId() == (i + 1)) {
+                            //System.out.println(s.getId() + " " + servers.get(i).getId() + " " + (i + 1));
+                            if (s.getId() == servers.get(i).getId() - 1) {
                                 s.decrementRequests();
                                 Thread reallocate = new Thread() {
 
@@ -162,9 +164,9 @@ public class WorkDistributionThread extends Thread {
                 out.println("Result " + result);
             }
         } catch (UnknownHostException e) {
-            //j.append("Don't know about server host\n");
+            j.append("Don't know about server host\n");
         } catch (IOException e) {
-            //j.append("Couldn't get I/O for the connection to server host\n");
+            j.append("Couldn't get I/O for the connection to server host\n");
         }
     }
 

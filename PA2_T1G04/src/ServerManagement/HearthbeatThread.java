@@ -80,7 +80,7 @@ public class HearthbeatThread extends Thread {
                 rl.unlock();
             }
             try {
-                sleep(2000);
+                sleep(6000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
