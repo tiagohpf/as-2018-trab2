@@ -1,4 +1,4 @@
-# Calculation of PI with Client-Server architecture
+# Calculation of PI with Client-Server Architecture
 
 With the calculation of PI, a plataform is designed and developed using tactics of Software Architecture. The project follows the quality attributes of Availabiliy, Performance and Scalability. </br>
 Each client connects to one server with sockets and send it a request for execute the operation
